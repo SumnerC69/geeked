@@ -39,6 +39,8 @@
   .page { display: none; }
   .page.active { display: block; }
   #gate-page, #main-page { display: none; }
+  #gate-page.active { display: flex; }
+  #main-page.active { display: block; }
 
   /* GATE */
   #gate-page {
@@ -771,6 +773,7 @@
     document.getElementById('main-page').classList.add('active');
     document.getElementById('welcomeUser').textContent = username;
     document.getElementById('headerUser').textContent = username;
+    window.scrollTo(0, 0);
 
     // Mark presence
     await setDoc(doc(db, 'presence', username), { online: true, lastSeen: serverTimestamp() });
