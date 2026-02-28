@@ -38,6 +38,7 @@
 
   .page { display: none; }
   .page.active { display: block; }
+  #gate-page, #main-page { display: none; }
 
   /* GATE */
   #gate-page {
@@ -504,7 +505,7 @@
 </head>
 <body>
 
-<div id="gate-page" class="page active">
+<div id="gate-page" class="page">
   <div class="gate-container">
     <div class="site-title">geeked<span>.</span></div>
     <div class="subtitle">members only</div>
@@ -765,6 +766,7 @@
 
   async function enterSite(username) {
     currentUser = username;
+    localStorage.setItem('geeked_session', username);
     document.getElementById('gate-page').classList.remove('active');
     document.getElementById('main-page').classList.add('active');
     document.getElementById('welcomeUser').textContent = username;
@@ -786,12 +788,28 @@
     unsubscribers.forEach(u => u());
     unsubscribers = [];
     currentUser = null;
+    localStorage.removeItem('geeked_session');
     document.getElementById('main-page').classList.remove('active');
     document.getElementById('gate-page').classList.add('active');
     document.getElementById('loginUser').value = '';
     document.getElementById('loginPass').value = '';
     switchToCode();
   };
+
+  // ── RESTORE SESSION ───────────────────────────────────────
+  const savedSession = localStorage.getItem('geeked_session');
+  if (savedSession) {
+    getDoc(doc(db, 'accounts', savedSession)).then(snap => {
+      if (snap.exists()) {
+        enterSite(savedSession);
+      } else {
+        localStorage.removeItem('geeked_session');
+        document.getElementById('gate-page').classList.add('active');
+      }
+    });
+  } else {
+    document.getElementById('gate-page').classList.add('active');
+  }
 
   // ── NAV ──────────────────────────────────────────────────
 
